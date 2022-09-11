@@ -30,8 +30,17 @@ python3.10 exporter.py
 
 ```
 export SCANNER_ADDRESS=<fill up your scanner_address>
-sed "s/<scanner_address>/${SCANNER_ADDRESS}/g" forta-exporter.service
 sudo cp forta-exporter.service /etc/systemd/system/
+sudo sed "s/<scanner_address>/${SCANNER_ADDRESS}/g" /etc/systemd/system/forta-exporter.service
+sudo sed "s/<home>/${HOME}/g" /etc/systemd/system/forta-exporter.service
+sudo sed "s/<user>/${USER}/g" /etc/systemd/system/forta-exporter.service
+sudo systemctl daemon-reload 
 sudo systemctl enable forta-exporter 
 sudo systemctl start forta-exporter
+```
+
+# Test it
+
+```
+curl -s localhost:9877/metric | grep forta
 ```
