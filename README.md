@@ -13,9 +13,9 @@ sudo apt install software-properties-common -y
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install python3.10 python3-virtualenv python3.10-distutils
-curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 cd forta-exporter
 virtualenv -p /usr/bin/python3.10 .venv
+curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 pip install -r requirements.txt
 ```
 
