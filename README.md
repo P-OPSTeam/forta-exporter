@@ -45,3 +45,7 @@ sudo systemctl start forta-exporter
 ```
 curl -s localhost:9877/metric | grep forta
 ```
+# TODO
+
+- [] Build grafana dashboard
+- [] review and evaluate if more metrics needs to be implemented
