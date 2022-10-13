@@ -37,7 +37,7 @@ def chainid_to_network(chainid):
         case 10:
             return "optimism"
         case 250:
-            return "optimism"
+            return "fantom"
         case _:
             return ""
 
