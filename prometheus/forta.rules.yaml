@@ -1,0 +1,47 @@
+groups:
+- name: forta
+  rules:
+  - alert: forta_scanner_down
+    expr: forta_scanner_status != 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Forta scanner down"
+      description: "Forta scanner on {{ $labels.instance }} is down."
+
+  - alert: forta_inspector_down
+    expr: forta_inspector_status != 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Forta inspector down"
+      description: "Forta inspector on {{ $labels.instance }} is down."
+
+  - alert: forta_json_rpc_status
+    expr: forta_json_rpc_status != 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Forta json RPC down"
+      description: "Forta json RPC on {{ $labels.instance }} is down."
+
+  - alert: forta_supervisor_status
+    expr: forta_supervisor_status != 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Forta supervisor down"
+      description: "Forta supervisor on {{ $labels.instance }} is down."
+
+  - alert: forta_sla
+    expr: forta_sla < 0.9
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Forta SLA for {{ $labels.scanner_address }} below expectation"
+      description: "Forta SLA on {{ $labels.instance }} {{ $labels.scanner_address }} is down."
