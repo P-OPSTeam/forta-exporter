@@ -32,9 +32,15 @@ python3.10 exporter.py
 ```
 export SCANNER_ADDRESS=<fill up your scanner_address>
 sudo cp forta-exporter.service /etc/systemd/system/
+<<<<<<< HEAD
 sudo sed -i "s/<scanner_address>/${SCANNER_ADDRESS}/g" /etc/systemd/system/forta-exporter.service
 sudo sed -i "s:<home>:${HOME}:g" /etc/systemd/system/forta-exporter.service
 sudo sed -i "s/<user>/${USER}/g" /etc/systemd/system/forta-exporter.service
+=======
+sudo sed "s/<scanner_address>/${SCANNER_ADDRESS}/g" /etc/systemd/system/forta-exporter.service
+sudo sed "s/<home>/${HOME}/g" /etc/systemd/system/forta-exporter.service
+sudo sed "s/<user>/${USER}/g" /etc/systemd/system/forta-exporter.service
+>>>>>>> 65fe9e08fcc62bfae4bd751faae005740de00889
 sudo systemctl daemon-reload 
 sudo systemctl enable forta-exporter 
 sudo systemctl start forta-exporter
