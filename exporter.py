@@ -121,8 +121,8 @@ class AppMetrics:
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
 
             #remove 'at block 15514261.'
-            detail=re.sub(r'at block \d+\. ', '', str)
-            
+            detail=re.sub(r'at block \d+\. ', '', detail)
+
             if status != "ok":
                 self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
             else:
