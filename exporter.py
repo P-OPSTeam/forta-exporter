@@ -65,12 +65,12 @@ class AppMetrics:
         # Prometheus metrics to collect
 
         self.forta_version = Gauge("forta_version", "Forta node version", ["forta_version"])
-        self.forta_scanner_status = Gauge("forta_scanner_status", "Forta scanner status, 0 means ok")
+        self.forta_scanner_status = Gauge("forta_scanner_status", "Forta scanner status, 0 means ok", ["detail"])
         self.forta_scanner_block_height = Gauge("forta_scanner_block_height", "Forta scanner last block fed")
-        self.forta_inspector_status = Gauge("forta_inspector_status", "Forta inspector status, 0 means ok", ["details"])
-        self.forta_json_rpc_status = Gauge("forta_json_rpc_status", "Forta json rpc status, 0 means ok", ["details"])
-        self.forta_supervisor_status = Gauge("forta_supervisor_status", "Forta supervisor status, 0 means ok", ["details"])
-        self.forta_updater_status = Gauge("forta_updater_status", "Forta updater status, 0 means ok", ["details"])
+        self.forta_inspector_status = Gauge("forta_inspector_status", "Forta inspector status, 0 means ok", ["detail"])
+        self.forta_json_rpc_status = Gauge("forta_json_rpc_status", "Forta json rpc status, 0 means ok", ["detail"])
+        self.forta_supervisor_status = Gauge("forta_supervisor_status", "Forta supervisor status, 0 means ok", ["detail"])
+        self.forta_updater_status = Gauge("forta_updater_status", "Forta updater status, 0 means ok", ["detail"])
         self.forta_agent_pool = Gauge("forta_agent_pool", "Number of Forta agent pool",["agent_lag_count"])
         self.forta_chainid = Gauge("forta_chainid", "Chain id of the chain forta node is running",["network"])
         self.forta_sla = Gauge("forta_sla", "SLA for the scanner address",["scanner_address"])
@@ -117,7 +117,12 @@ class AppMetrics:
             #     "details": "at block 15514261."
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
-            self.forta_scanner_status.set(forta_status_code(status))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
+            
+            if status != 0:
+                self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
+            else:
+                self.forta_scanner_status.labels(detail="").set(forta_status_code(status))
  
             #   {
             #     "name": "forta.container.forta-scanner.service.block-feed.last-block",
@@ -133,8 +138,8 @@ class AppMetrics:
             #     "details": "running"
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-inspector"][0]
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector"][0]
-            self.forta_inspector_status.labels(details=details).set(forta_status_code(status))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector"][0]
+            self.forta_inspector_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
             #     "name": "forta.container.forta-json-rpc",
@@ -142,8 +147,8 @@ class AppMetrics:
             #     "details": "running"
             #   }
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
-            self.forta_json_rpc_status.labels(details=details).set(forta_status_code(status))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
+            self.forta_json_rpc_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
             #     "name": "forta.container.forta-supervisor",
@@ -151,8 +156,8 @@ class AppMetrics:
             #     "details": "running"
             #   }
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-supervisor"][0]
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-supervisor"][0]
-            self.forta_supervisor_status.labels(details=details).set(forta_status_code(status))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-supervisor"][0]
+            self.forta_supervisor_status.labels(detail=detail).set(forta_status_code(status))
 
 
             #   {
@@ -161,8 +166,8 @@ class AppMetrics:
             #     "details": "running"
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-updater"][0]
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-updater"][0]
-            self.forta_updater_status.labels(details=details).set(forta_status_code(status))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-updater"][0]
+            self.forta_updater_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
             #     "name": "forta.container.forta-scanner.service.agent-pool.agents.total",
@@ -174,17 +179,17 @@ class AppMetrics:
             #     "status": "info",
             #     "details": "0"
             #   },
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.total"][0]
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.total"][0]
             lag_count=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.lagging"][0]
-            self.forta_agent_pool.labels(agent_lag_count=lag_count).set(int(details))
+            self.forta_agent_pool.labels(agent_lag_count=lag_count).set(int(detail))
 
             #   {
             #     "name": "forta.container.forta-inspector.service.inspector.scan-api.chain-id",
             #     "status": "info",
             #     "details": "1"
             # } 
-            details=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector.service.inspector.scan-api.chain-id"][0]
-            self.forta_chainid.labels(network=chainid_to_network(int(details))).set(int(details))
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector.service.inspector.scan-api.chain-id"][0]
+            self.forta_chainid.labels(network=chainid_to_network(int(details))).set(int(detail))
 
         except Exception as e:
             print(f"Error trying to access the health data on {url} with error:" + str(e))
