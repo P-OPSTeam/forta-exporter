@@ -119,7 +119,7 @@ class AppMetrics:
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             
-            if status != 0:
+            if status != "ok":
                 self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
             else:
                 self.forta_scanner_status.labels(detail="").set(forta_status_code(status))
