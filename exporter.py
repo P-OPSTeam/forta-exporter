@@ -4,6 +4,7 @@ import os
 import time
 from prometheus_client import start_http_server, Gauge, Enum
 import requests
+import re
 from datetime import datetime, timezone
 
 #https://github.com/forta-network/forta-core-go/blob/1db463db513fb7a735592a375bf06427ebacb031/clients/health/report.go#L16
@@ -114,10 +115,13 @@ class AppMetrics:
             #   {
             #     "name": "forta.container.forta-scanner.summary",
             #     "status": "ok",
-            #     "details": "at block 15514261."
+            #     "details": "at block 15514261." | "at block 49216362. trace api (trace_block) is failing with error 'Invalid block for tracing'."
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
+
+            #remove 'at block 15514261.'
+            detail=re.sub(r'at block \d+\. ', '', str)
             
             if status != "ok":
                 self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
