@@ -189,7 +189,7 @@ class AppMetrics:
             #     "details": "1"
             # } 
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector.service.inspector.scan-api.chain-id"][0]
-            self.forta_chainid.labels(network=chainid_to_network(int(details))).set(int(detail))
+            self.forta_chainid.labels(network=chainid_to_network(int(detail))).set(int(detail))
 
         except Exception as e:
             print(f"Error trying to access the health data on {url} with error:" + str(e))
