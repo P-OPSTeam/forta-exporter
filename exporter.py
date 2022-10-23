@@ -6,6 +6,15 @@ from prometheus_client import start_http_server, Gauge, Enum
 import requests
 import re
 from datetime import datetime, timezone
+import argparse
+
+def argsparse():
+
+   parser = argparse.ArgumentParser(description="Forta Exporter")
+   parser.add_argument( "-v", "--verbose", help="increase output/debug verbosity and details, default is false",
+                        action="store_true")
+   args = parser.parse_args()
+   return args
 
 #https://github.com/forta-network/forta-core-go/blob/1db463db513fb7a735592a375bf06427ebacb031/clients/health/report.go#L16
 def forta_status_code(code):
@@ -52,16 +61,18 @@ def get_timestamp(dtstring):
     # Return the time in seconds since the epoch 
     return dt.timestamp()
 
+
 class AppMetrics:
     """
     Representation of Prometheus metrics and loop to fetch and transform
     application metrics into Prometheus metrics.
     """
 
-    def __init__(self, app_port=80, polling_interval_seconds=15, Scanner_address=""):
+    def __init__(self, app_port=80, polling_interval_seconds=15, Scanner_address="", verbose=False):
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds
         self.scanner_address = Scanner_address
+        self.verbose = verbose
 
         # Prometheus metrics to collect
 
@@ -151,7 +162,11 @@ class AppMetrics:
             #     "details": "running"
             #   }
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
-            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
+            if self.verbose:
+                detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
+            else:
+                detail=""
+
             self.forta_json_rpc_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
@@ -201,6 +216,9 @@ class AppMetrics:
 def main():
     """Main entry point"""
 
+    args = argsparse()
+    verbose = args.verbose
+
     polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "15"))
     app_port = int(os.getenv("APP_PORT", "80"))
     exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
@@ -211,7 +229,8 @@ def main():
     app_metrics = AppMetrics(
         app_port=app_port,
         polling_interval_seconds=polling_interval_seconds,
-        Scanner_address=ScannerAddress
+        Scanner_address=ScannerAddress,
+        verbose=verbose
     )
     start_http_server(exporter_port)
     app_metrics.run_metrics_loop()
