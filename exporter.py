@@ -130,15 +130,8 @@ class AppMetrics:
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
-
-            #remove 'at block 15514261.'
-            detail=re.sub(r'at block \d+\. ', '', detail)
-
-            if status != "ok":
-                self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
-            else:
-                self.forta_scanner_status.labels(detail="").set(forta_status_code(status))
- 
+            detail="" if not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
+            self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
             #   {
             #     "name": "forta.container.forta-scanner.service.block-feed.last-block",
             #     "status": "info",
@@ -154,6 +147,7 @@ class AppMetrics:
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-inspector"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector"][0]
+            detail="" if not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
             self.forta_inspector_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
@@ -162,11 +156,8 @@ class AppMetrics:
             #     "details": "running"
             #   }
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
-            if self.verbose:
-                detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
-            else:
-                detail=""
-
+            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-json-rpc"][0]
+            detail="" if  not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
             self.forta_json_rpc_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
@@ -176,6 +167,7 @@ class AppMetrics:
             #   }
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-supervisor"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-supervisor"][0]
+            detail="" if  not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
             self.forta_supervisor_status.labels(detail=detail).set(forta_status_code(status))
 
 
@@ -186,6 +178,7 @@ class AppMetrics:
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-updater"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-updater"][0]
+            detail="" if not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
             self.forta_updater_status.labels(detail=detail).set(forta_status_code(status))
 
             #   {
