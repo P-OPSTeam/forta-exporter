@@ -130,6 +130,7 @@ class AppMetrics:
             #   },
             status=[x["status"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
+            detail=re.sub(r'at block \d+\. ', '', detail) #remove at block 15514261.
             detail="" if not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
             self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
             #   {
