@@ -192,9 +192,9 @@ class AppMetrics:
             #     "status": "info",
             #     "details": "0"
             #   },
-            detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.total"][0]
-            lag_count=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.lagging"][0]
-            self.forta_agent_pool.labels(agent_lag_count=lag_count).set(int(detail))
+            #detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.total"][0]
+            #lag_count=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.service.agent-pool.agents.lagging"][0]
+            #self.forta_agent_pool.labels(agent_lag_count=lag_count).set(int(detail))
 
             #   {
             #     "name": "forta.container.forta-inspector.service.inspector.scan-api.chain-id",
