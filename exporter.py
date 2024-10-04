@@ -24,13 +24,13 @@ def forta_status_code(code):
         case "down":
             return 1
         case "failing":
-            return 2     
+            return 2
         case "lagging":
             return 3
         case "info":
             return 4
         case _: #unknown
-            return 5  
+            return 5
 
 def chainid_to_network(chainid):
     match chainid:
@@ -58,7 +58,7 @@ def get_timestamp(dtstring):
     # so correct timestamp is returned
     dt = dt.replace(tzinfo=timezone.utc)
 
-    # Return the time in seconds since the epoch 
+    # Return the time in seconds since the epoch
     return dt.timestamp()
 
 
@@ -77,7 +77,7 @@ class AppMetrics:
         # Prometheus metrics to collect
 
         self.forta_version = Gauge("forta_version", "Forta node version", ["forta_version"])
-        self.forta_scanner_status = Gauge("forta_scanner_status", "Forta scanner status, 0 means ok", ["detail"])
+        self.forta_scanner_status = Gauge("forta_scanner_status", "Forta scanner status, 0 means ok")
         self.forta_scanner_block_height = Gauge("forta_scanner_block_height", "Forta scanner last block fed")
         self.forta_inspector_status = Gauge("forta_inspector_status", "Forta inspector status, 0 means ok", ["detail"])
         self.forta_json_rpc_status = Gauge("forta_json_rpc_status", "Forta json rpc status, 0 means ok", ["detail"])
@@ -132,7 +132,7 @@ class AppMetrics:
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-scanner.summary"][0]
             detail=re.sub(r'at block \d+\.', '', detail) #remove at block 15514261.
             detail="" if not self.verbose and status != "ok" else detail #keep only if verbose is true and status is diff from ok
-            self.forta_scanner_status.labels(detail=detail).set(forta_status_code(status))
+            self.forta_scanner_status.set(forta_status_code(status))
             #   {
             #     "name": "forta.container.forta-scanner.service.block-feed.last-block",
             #     "status": "info",
@@ -200,13 +200,13 @@ class AppMetrics:
             #     "name": "forta.container.forta-inspector.service.inspector.scan-api.chain-id",
             #     "status": "info",
             #     "details": "1"
-            # } 
+            # }
             detail=[x["details"] for x in health_data if x["name"] == "forta.container.forta-inspector.service.inspector.scan-api.chain-id"][0]
             self.forta_chainid.labels(network=chainid_to_network(int(detail))).set(int(detail))
 
         except Exception as e:
             print(f"Error trying to access the health data on {url} with error:" + str(e))
-            
+
 def main():
     """Main entry point"""
 
